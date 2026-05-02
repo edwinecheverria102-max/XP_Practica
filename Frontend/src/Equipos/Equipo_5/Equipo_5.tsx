@@ -1,7 +1,7 @@
 import React from 'react'
 
-export const Equipo_5 = () => {
+export const usuarios = () => {
     return (
-        <div>Equipo_5</div>
+        <div>Usuarios</div>
     )
 }

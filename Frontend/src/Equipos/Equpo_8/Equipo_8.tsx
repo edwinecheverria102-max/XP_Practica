@@ -1,7 +1,7 @@
 import React from 'react'
 
-export const Equipo_8 = () => {
+export const editar = () => {
     return (
-        <div>Equipo_8</div>
+        <div>Editar</div>
     )
 }
