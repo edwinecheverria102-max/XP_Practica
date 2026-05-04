@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const agregar = () => {
+export const Agregar = () => {
     return (
         <div>Agregar</div>
     )

@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import './sedebar.css'
 
+interface SidebarProps {
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
+}
+
 const menuItems = [
     { id: 'login', label: 'Iniciar Sesión' },
     { id: 'registro', label: 'Registro' },
@@ -13,12 +18,9 @@ const menuItems = [
     { id: 'inventario', label: 'Inventario' }
 ];
 
-export const Sidebar: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('login');
-
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     return (
         <aside className="sidebar-container">
-
             <div className="sidebar-header">
                 <h2 className="sidebar-title">Biblioteca XP</h2>
             </div>
