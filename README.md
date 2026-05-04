@@ -19,7 +19,15 @@ API para practica de sistema de biblioteca hecha con FastAPI y SQLite.
 | Equipo 9 | `DDC` |
 
 ---
+## Cambiar de rama
 
+```bash
+# 1. Cambiar a una rama existente
+    git checkout nombre-de-la-rama
+
+# 2. verificar la rama en la que estas
+    git branch
+```
 ---
 
 ## Cómo ejecutar el Backend
