@@ -2,11 +2,27 @@
 
 API para practica de sistema de biblioteca hecha con FastAPI y SQLite.
 
-De momento esta completo hasta donde pude ver, ya podemos cambiarle cosas segun como veamos conveniente para la actividad.
+---
+
+## Equipos
+
+| Equipo | Metodologia |
+|--------|------|
+| Equipo 1 | `PSP` |
+| Equipo 2 | `TSP` |
+| Equipo 3 | `SCRUM` |
+| Equipo 4 | `DAS` |
+| Equipo 5 | `DEVOPS` |
+| Equipo 6 | `MLOPS` |
+| Equipo 7 | `LSD` |
+| Equipo 8 | `KANBAN` |
+| Equipo 9 | `DDC` |
 
 ---
 
-## Cómo ejecutar
+---
+
+## Cómo ejecutar el Backend
 
 ```bash
 
@@ -73,10 +89,10 @@ De momento esta completo hasta donde pude ver, ya podemos cambiarle cosas segun 
 
 ---
 
-## Estructura del proyecto
+## Estructura del Backend
 
 ```
-XP_Practica/
+Backend/
 ├── routers/
 │   ├── __init__.py
 │   ├── auth.py
@@ -91,4 +107,20 @@ XP_Practica/
 ├── requirements.txt
 ├── README.md
 └── SQLQuery1.sql
+```
+
+## Cómo ejecutar el Frontend
+
+```bash
+# 1. Entrar en la carpeta
+    cd [ruta de tus carpetas]\ Frontend
+
+# 2. Reconstruir modulos de node
+    npm i
+
+# 3. Corer el front de forma local
+    nmp run dev
+
+# 4. Ver Frontend
+    Abre la URL en tu navegador, veras algo como esto: Local: http://localhost:5173/
 ```
