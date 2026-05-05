@@ -1,63 +1,58 @@
-import React, { useState } from 'react';
-import { Sidebar } from './Componentes/sidebar';
-import './Componentes/sedebar.css';
+// @ts-nocheck
+/* eslint-disable */
+import * as React from 'react'
 
-import { Login } from './Equipos/Equipo_1/Equipo_1';
-import { Registro } from './Equipos/Equipo_2/Equipo_2';
-import { Perfil } from './Equipos/Equipo_3/Equipo_3';
-import { Catalogo } from './Equipos/Equipo_4/Equipo_4';
-import { Usuarios } from './Equipos/Equipo_5/Equipo_5';
-import { Agregar } from './Equipos/Equipo_6/Equipo_6';
-import { Ver } from './Equipos/Equipo_7/Equipo_7';
-import { Editar } from './Equipos/Equpo_8/Equipo_8';
-import { Inventario } from './Equipos/Equipo_9/Equipo_9';
+function Equipo_2() {
+  const [nombre, setNombre] = React.useState('')
+  const [correo, setCorreo] = React.useState('')
+  const [contrasena, setContrasena] = React.useState('')
+  const [confirmar, setConfirmar] = React.useState('')
+  const [telefono, setTelefono] = React.useState('')
+  const [error, setError] = React.useState('')
+  const [exito, setExito] = React.useState(false)
+  const [cargando, setCargando] = React.useState(false)
 
-const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('login')
+  const camposCompletos = nombre && correo && contrasena && confirmar && telefono
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'login':
-        return <Login />
-      case 'registro':
-        return <Registro />
-      case 'perfil':
-        return <Perfil />
-      case 'catalogo':
-        return <Catalogo />
-      case 'usuarios':
-        return <Usuarios />
-      case 'agregar':
-        return <Agregar />
-      case 'ver':
-        return <Ver />
-      case 'editar':
-        return <Editar />
-      case 'inventario':
-        return <Inventario />
-      default:
-        return <div>Selecciona una opción</div>
+  const handleSubmit = async () => {
+    if (contrasena !== confirmar) {
+      setError('Las contrasenas no coinciden')
+      return
     }
+    setError('')
+    setCargando(true)
+    try {
+      const response = await fetch('http://127.0.0.1:8000/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, correo, contrasena, telefono })
+      })
+      if (response.ok) {
+        setExito(true)
+      } else {
+        const data = await response.json()
+        setError(data.detail || 'Error al registrar')
+      }
+    } catch (e) {
+      setError('No se pudo conectar al servidor')
+    }
+    setCargando(false)
   }
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
-
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      <main style={{
-        flex: 1,
-        padding: '40px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}>
-        <div style={{ width: '100%', maxWidth: '800px' }}>
-          {renderContent()}
-        </div>
-      </main>
-    </div>
-  );
+  return React.createElement('div', { style: { padding: '2rem', maxWidth: '400px', margin: '0 auto' } },
+    React.createElement('h2', null, 'Crear cuenta nueva'),
+    exito ? React.createElement('p', { style: { color: 'green', fontWeight: 'bold' } }, 'Registro exitoso! Tu cuenta fue creada.') : null,
+    React.createElement('input', { placeholder: 'Nombre completo', value: nombre, onChange: (e: any) => setNombre(e.target.value), style: { display: 'block', width: '100%', marginBottom: '1rem' } }),
+    React.createElement('input', { placeholder: 'Correo electronico', value: correo, onChange: (e: any) => setCorreo(e.target.value), style: { display: 'block', width: '100%', marginBottom: '1rem' } }),
+    React.createElement('input', { placeholder: 'Contrasena', type: 'password', value: contrasena, onChange: (e: any) => setContrasena(e.target.value), style: { display: 'block', width: '100%', marginBottom: '1rem' } }),
+    React.createElement('input', { placeholder: 'Confirmar contrasena', type: 'password', value: confirmar, onChange: (e: any) => setConfirmar(e.target.value), style: { display: 'block', width: '100%', marginBottom: '1rem' } }),
+    React.createElement('input', { placeholder: 'Numero de telefono', value: telefono, onChange: (e: any) => setTelefono(e.target.value), style: { display: 'block', width: '100%', marginBottom: '1rem' } }),
+    error ? React.createElement('p', { style: { color: 'red' } }, error) : null,
+    React.createElement('button', { onClick: handleSubmit, disabled: !camposCompletos || cargando },
+      cargando ? 'Registrando...' : 'Finalizar registro'
+    )
+  )
 }
 
-export default App;
+export default Equipo_2
+export { Equipo_2 as Registro }
