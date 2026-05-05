@@ -5,10 +5,10 @@ import './Componentes/sedebar.css';
 import { Login } from './Equipos/Equipo_1/Equipo_1';
 import { Registro } from './Equipos/Equipo_2/Equipo_2';
 import { Perfil } from './Equipos/Equipo_3/Equipo_3';
-import { Catalogo } from './Equipos/Equipo_4/Equipo_4';
+import { Ver } from './Equipos/Equipo_4/Equipo_4';
 import { Usuarios } from './Equipos/Equipo_5/Equipo_5';
 import { Agregar } from './Equipos/Equipo_6/Equipo_6';
-import { Ver } from './Equipos/Equipo_7/Equipo_7';
+import { Catalogo } from './Equipos/Equipo_7/Equipo_7';
 import { Editar } from './Equipos/Equpo_8/Equipo_8';
 import { Inventario } from './Equipos/Equipo_9/Equipo_9';
 
