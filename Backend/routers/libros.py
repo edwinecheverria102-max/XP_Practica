@@ -26,12 +26,10 @@ def ver_libros(db: Session = Depends(get_db)):
 @router.get("/{id_libro}", response_model=schemas.LibroResponse)
 def ver_libro(id_libro: int, db: Session = Depends(get_db)):
     """Ver información de un libro específico."""
-    # ── [COMPLETABLE] ─────────────────────────────────────────────────────
     libro = db.query(models.Libro).filter(models.Libro.id_libro == id_libro).first()
     if not libro:
         raise HTTPException(status_code=404, detail="Libro no encontrado")
     return libro
-    # ── [/COMPLETABLE] ─────────────────────────────────────────────────────
 
 
 @router.post("", response_model=schemas.LibroResponse)
