@@ -45,6 +45,8 @@ class LibroResponse(BaseModel):
     isbn:             Optional[str]
     anio_publicacion: Optional[int]
     estado:           str
+    id_autor:         Optional[int] = None
+    id_categoria:     Optional[int] = None
 
     class Config:
         from_attributes = True

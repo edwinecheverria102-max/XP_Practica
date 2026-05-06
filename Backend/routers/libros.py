@@ -65,3 +65,17 @@ def editar_libro(id_libro: int, libro: schemas.LibroCreate, db: Session = Depend
     db.refresh(libro_db)
     return libro_db
     # ── [/COMPLETABLE] ─────────────────────────────────────────────────────
+
+@router.delete("/{id_libro}")
+def eliminar_libro(id_libro: int, db: Session = Depends(get_db)):
+    """Eliminar un libro existente."""
+    
+    # ── [COMPLETABLE] ─────────────────────────────────────────────────────
+    libro_db = db.query(models.Libro).filter(models.Libro.id_libro == id_libro).first()
+    if not libro_db:
+        raise HTTPException(status_code=404, detail="Libro no encontrado")
+        
+    db.delete(libro_db)
+    db.commit()
+    return {"detail": "Libro eliminado exitosamente"}
+    # ── [/COMPLETABLE] ────────
