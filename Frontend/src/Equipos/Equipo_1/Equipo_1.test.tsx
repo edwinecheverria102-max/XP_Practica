@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act } from 'react-dom/test-utils'
 import { createRoot, type Root } from 'react-dom/client'
 import { Login } from './Equipo_1'
@@ -43,5 +43,33 @@ describe('Login', () => {
 		expect(buttons[1]?.textContent).toBe('Registrarse')
 		expect(buttons[2]?.textContent).toBe('Cancelar')
 		expect(Array.from(buttons).every((button) => button.className.includes('login-button'))).toBe(true)
+	})
+
+	it('muestra un aviso de "contraseña es incorrecta" si las credenciales son inválidas', async () => {
+		window.fetch = vi.fn().mockResolvedValue({
+			ok: false,
+			status: 401,
+			json: async () => ({ detail: 'contraseña es incorrecta' })
+		})
+
+		const emailInput = container.querySelector('input[type="email"]') as HTMLInputElement
+		const passwordInput = container.querySelector('input[type="password"]') as HTMLInputElement
+		const form = container.querySelector('form') as HTMLFormElement
+
+		act(() => {
+			emailInput.value = 'test@example.com'
+			emailInput.dispatchEvent(new Event('input', { bubbles: true }))
+
+			passwordInput.value = 'wrongpassword'
+			passwordInput.dispatchEvent(new Event('input', { bubbles: true }))
+		})
+
+		await act(async () => {
+			form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+		})
+
+		const errorMsg = container.querySelector('.error-message')
+		expect(errorMsg).not.toBeNull()
+		expect(errorMsg?.textContent).toContain('contraseña es incorrecta')
 	})
 })
