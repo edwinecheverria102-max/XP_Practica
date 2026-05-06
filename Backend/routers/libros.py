@@ -38,8 +38,24 @@ def ver_libro(id_libro: int, db: Session = Depends(get_db)):
 def agregar_libro(libro: schemas.LibroCreate, db: Session = Depends(get_db)):
     """Agregar un nuevo libro."""
 
-    # ── [COMPLETABLE] ─────────────────────────────────────────────────────
-    nuevo_libro = models.Libro(**libro.dict())
+    # Encontrar o crear autor si se envía el nombre del autor.
+    autor_id = libro.id_autor
+    if autor_id is not None and autor_id <= 0:
+        autor_id = None
+
+    if not autor_id and libro.autor_nombre:
+        autor = db.query(models.Autor).filter(models.Autor.nombre == libro.autor_nombre).first()
+        if not autor:
+            autor = models.Autor(nombre=libro.autor_nombre)
+            db.add(autor)
+            db.flush()
+        autor_id = autor.id_autor
+
+    libro_data = libro.dict(exclude={"autor_nombre"})
+    if autor_id is not None:
+        libro_data["id_autor"] = autor_id
+
+    nuevo_libro = models.Libro(**libro_data)
     db.add(nuevo_libro)
     db.commit()
     db.refresh(nuevo_libro)

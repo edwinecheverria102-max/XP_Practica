@@ -32,6 +32,7 @@ class LoginRequest(BaseModel):
 
 class LibroCreate(BaseModel):
     titulo:           str
+    autor_nombre:     Optional[str] = None
     id_autor:         Optional[int] = None
     id_categoria:     Optional[int] = None
     isbn:             Optional[str] = None
