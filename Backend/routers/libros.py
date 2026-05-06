@@ -23,14 +23,11 @@ def ver_libros(db: Session = Depends(get_db)):
     resultado = []
 
     for libro in libros:
-        if libro.autor is None:
-            raise Exception(f"Libro {libro.id_libro} sin autor")
-
         resultado.append({
             "id": libro.id_libro,
             "titulo": libro.titulo,
-            "autor": libro.autor.nombre,
-            "genero": libro.categoria.nombre_categoria,
+            "autor": libro.autor.nombre if libro.autor else None,
+            "genero": libro.categoria.nombre_categoria if libro.categoria else None,
             "estado": libro.estado
         })
 
