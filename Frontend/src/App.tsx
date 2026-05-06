@@ -22,7 +22,7 @@ const App: React.FC = () => {
       case 'registro':
         return <Registro />
       case 'perfil':
-        return <Perfil />
+        return <Usuarios />
       case 'catalogo':
         return <Catalogo />
       case 'usuarios':
