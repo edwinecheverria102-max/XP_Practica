@@ -1,11 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from Backend.database import SessionLocal
 import Backend.models as models
 import Backend.schemas as schemas
 
 router = APIRouter(prefix="/libros", tags=["Libros"])
-
 
 def get_db():
     db = SessionLocal()
@@ -15,11 +14,27 @@ def get_db():
         db.close()
 
 
-@router.get("", response_model=list[schemas.LibroResponse])
+@router.get("")
 def ver_libros(db: Session = Depends(get_db)):
     """Obtener todos los libros."""
     # ── [COMPLETABLE] ── ─────────────────────────────────────────────────────
-    return db.query(models.Libro).all()
+    libros = db.query(models.Libro).all()
+
+    resultado = []
+
+    for libro in libros:
+        if libro.autor is None:
+            raise Exception(f"Libro {libro.id_libro} sin autor")
+
+        resultado.append({
+            "id": libro.id_libro,
+            "titulo": libro.titulo,
+            "autor": libro.autor.nombre,
+            "genero": libro.categoria.nombre_categoria,
+            "estado": libro.estado
+        })
+
+    return resultado
     # ── [/COMPLETABLE] ─────────────────────────────────────────────────────
 
 
