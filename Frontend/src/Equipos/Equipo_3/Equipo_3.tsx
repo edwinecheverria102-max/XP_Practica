@@ -36,8 +36,8 @@ export const Catalogo = () => {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
               <span style={{
-                background: libro.estado === 'disponible' ? '#eaf3de' : '#faeeda',
-                color: libro.estado === 'disponible' ? '#3b6d11' : '#854f0b',
+                background: libro.estado === 'Disponible' ? '#eaf3de' : '#faeeda',
+                color: libro.estado === 'Disponible' ? '#3b6d11' : '#854f0b',
                 padding: '2px 10px',
                 borderRadius: '999px',
                 fontSize: '12px',
