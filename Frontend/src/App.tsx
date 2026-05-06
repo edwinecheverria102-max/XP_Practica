@@ -4,7 +4,7 @@ import './Componentes/sedebar.css';
 
 import { Login } from './Equipos/Equipo_1/Equipo_1';
 import { Registro } from './Equipos/Equipo_2/Equipo_2';
-import { Perfil } from './Equipos/Equipo_3/Equipo_3';
+import { Catalogo as CatalogoEquipo3 } from './Equipos/Equipo_3/Equipo_3';
 import { Catalogo } from './Equipos/Equipo_4/Equipo_4';
 import { Usuarios } from './Equipos/Equipo_5/Equipo_5';
 import { Agregar } from './Equipos/Equipo_6/Equipo_6';
@@ -22,9 +22,9 @@ const App: React.FC = () => {
       case 'registro':
         return <Registro />
       case 'perfil':
-        return <Perfil />
+        return <div>Perfil</div>
       case 'catalogo':
-        return <Catalogo />
+       return <CatalogoEquipo3 />
       case 'usuarios':
         return <Usuarios />
       case 'agregar':
