@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import './Equipo_1.css'
 
-export const Login = () => {
+type LoginProps = {
+    onGoToRegistro?: () => void;
+}
+
+export const Login = ({ onGoToRegistro }: LoginProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -70,6 +74,16 @@ export const Login = () => {
                     <button className="login-button login-button--primary" type="submit">Iniciar sesión</button>
                 </div>
             </form>
+            <p>
+                ¿No tienes una cuenta?{' '}
+                <button
+                    type="button"
+                    onClick={onGoToRegistro}
+                    style={{ background: 'none', border: 'none', padding: 0, color: '#6b4eff', cursor: 'pointer', font: 'inherit' }}
+                >
+                    Registrate Aqui
+                </button>
+            </p>
         </section>
     )
 }
