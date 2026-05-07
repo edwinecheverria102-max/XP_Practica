@@ -18,7 +18,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'login':
-        return <Login />
+        return <Login onGoToRegistro={() => setActiveTab('registro')} />
       case 'registro':
         return <Registro />
       case 'perfil':
