@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from Backend.database import SessionLocal
+from sqlalchemy.exc import IntegrityError
+from Backend.database import get_db
 import Backend.models as models
 import Backend.schemas as schemas
 
@@ -34,16 +36,31 @@ def ver_libro(id_libro: int, db: Session = Depends(get_db)):
     # ── [/COMPLETABLE] ─────────────────────────────────────────────────────
 
 
-@router.post("", response_model=schemas.LibroResponse)
+@router.post("", response_model=schemas.LibroResponse, status_code=201)
 def agregar_libro(libro: schemas.LibroCreate, db: Session = Depends(get_db)):
-    """Agregar un nuevo libro."""
+    """Agregar un nuevo libro al sistema."""
 
     # ── [COMPLETABLE] ─────────────────────────────────────────────────────
-    nuevo_libro = models.Libro(**libro.dict())
-    db.add(nuevo_libro)
-    db.commit()
-    db.refresh(nuevo_libro)
-    return nuevo_libro
+    try:
+        # Pydantic v2 recomienda usar model_dump() en lugar de dict()
+        # Si usas Pydantic v1, mantén libro.dict()
+        datos_libro = libro.model_dump() if hasattr(libro, 'model_dump') else libro.dict()
+        
+        nuevo_libro = models.Libro(**datos_libro)
+        
+        db.add(nuevo_libro)
+        db.commit()
+        db.refresh(nuevo_libro)
+        
+        return nuevo_libro
+        
+    except IntegrityError:
+        # Revertimos la transacción si hay un error (ej. ISBN duplicado)
+        db.rollback()
+        raise HTTPException(status_code=400, detail="El libro ya existe o hay un error de integridad de datos.")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
     # ── [/COMPLETABLE] ─────────────────────────────────────────────────────
 
 
