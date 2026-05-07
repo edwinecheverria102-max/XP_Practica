@@ -81,7 +81,7 @@ describe('test del equipo 7', () => {
     render(<Ver />)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /agregar libro/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /\+ Agregar Libro/i })).toBeInTheDocument()
     })
   })
 
@@ -100,7 +100,7 @@ describe('test del equipo 7', () => {
 
     render(<Ver />)
 
-    const botonAgregar = await screen.findByRole('button', { name: /agregar libro/i })
+    const botonAgregar = await screen.findByRole('button', { name: /\+ Agregar Libro/i })
     await userEvent.click(botonAgregar)
 
     const formulario = screen.getByRole('form', { name: /formulario agregar libro/i })
@@ -122,7 +122,7 @@ describe('test del equipo 7', () => {
 
     render(<Ver />)
 
-    const botonAgregar = await screen.findByRole('button', { name: /agregar libro/i })
+    const botonAgregar = await screen.findByRole('button', { name: /\+ Agregar Libro/i })
     await userEvent.click(botonAgregar)
 
     const campoTitulo = screen.getByLabelText(/título/i)
@@ -170,7 +170,7 @@ describe('test del equipo 7', () => {
       expect(screen.getByText('Cien años de soledad')).toBeInTheDocument()
     })
 
-    const botonAgregar = screen.getByRole('button', { name: /agregar libro/i })
+    const botonAgregar = screen.getByRole('button', { name: /\+ Agregar Libro/i })
     await userEvent.click(botonAgregar)
 
     const campoTitulo = screen.getByLabelText(/título/i)
@@ -215,5 +215,64 @@ describe('test del equipo 7', () => {
       titulo: 'El Quijote',
       autor: 'Miguel de Cervantes',
     })
+  })
+
+  it('debe permitir editar un libro en línea y guardar los cambios', async () => {
+    const mockedFetch = vi.fn((input, init) => {
+      const url = typeof input === 'string' ? input : input.url
+      
+      if (url.includes('/inventario') && (!init || init.method === undefined)) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockInventario),
+        })
+      }
+
+      if (url.includes('/libros/1') && init?.method === 'PUT') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ mensaje: 'Libro actualizado' }),
+        })
+      }
+
+      return Promise.reject(new Error('Unexpected fetch'))
+    })
+
+    Object.defineProperty(globalThis, 'fetch', {
+      value: mockedFetch,
+      configurable: true,
+    })
+
+    render(<Ver />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Cien años de soledad')).toBeInTheDocument()
+    })
+
+    const botonesEditar = screen.getAllByRole('button', { name: /Editar/i })
+    await userEvent.click(botonesEditar[0])
+
+    const botonGuardar = screen.getByRole('button', { name: /Guardar/i })
+    const botonCancelar = screen.getByRole('button', { name: /Cancelar/i })
+    expect(botonGuardar).toBeInTheDocument()
+    expect(botonCancelar).toBeInTheDocument()
+
+    const inputTitulo = screen.getByDisplayValue('Cien años de soledad')
+    
+    await userEvent.clear(inputTitulo)
+    await userEvent.type(inputTitulo, 'Cien años de soledad - Edición Especial')
+    await userEvent.click(botonGuardar)
+
+    expect(mockedFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/libros/1'),
+      expect.objectContaining({
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titulo: 'Cien años de soledad - Edición Especial',
+          estado: 'Disponible',
+        }),
+      })
+    )
   })
 })

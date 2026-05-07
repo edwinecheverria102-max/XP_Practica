@@ -17,11 +17,24 @@ interface VerProps {
   onSubmit?: (data: { titulo: string; autor: string }) => void;
 }
 
+const initialFormState = {
+  titulo: '',
+  autor: '',
+  idAutor: '0',
+  idCategoria: '0',
+  isbn: '',
+  anioPublicacion: '0',
+  estado: 'Disponible',
+};
+
 export const Ver: React.FC<VerProps> = ({ onSubmit }) => {
   const [libros, setLibros] = useState<Libro[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState(initialFormState);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editFormData, setEditFormData] = useState({ titulo: '', estado: '' });
   const [titulo, setTitulo] = useState('');
   const [autor, setAutor] = useState('');
   const [idAutor, setIdAutor] = useState('0');
@@ -31,6 +44,18 @@ export const Ver: React.FC<VerProps> = ({ onSubmit }) => {
   const [estado, setEstado] = useState('Disponible');
   const [message, setMessage] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+
+const fetchInventario = () => {
+    setLoading(true);
+    fetch(`${API_URL}/inventario`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setLibros(data))
+      .catch((err) => setFetchError(err.message || 'Error al cargar el inventario'))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     fetch(`${API_URL}/inventario`)
@@ -93,6 +118,43 @@ export const Ver: React.FC<VerProps> = ({ onSubmit }) => {
     }
   };
 
+  const handleEditClick = (libro: Libro) => {
+    setEditingId(libro.id_libro);
+    setEditFormData({ titulo: libro.titulo, estado: libro.estado });
+    setMessage(null);
+    setFormError(null);
+  };
+
+  const handleEditFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const handleSaveEdit = async (id_libro: number) => {
+    try {
+      const response = await fetch(`${API_URL}/libros/${id_libro}`, {
+        method: 'PUT', 
+		headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titulo: editFormData.titulo,
+          estado: editFormData.estado,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Error al actualizar el libro');
+
+      setMessage('Libro actualizado correctamente.');
+      setEditingId(null); 
+	  fetchInventario(); 
+	} catch (err) {
+      setFormError('No se pudo actualizar el libro. Verifica la conexión con el backend.');
+    }
+  };
+
   return (
     <div>
       <section>
@@ -105,6 +167,7 @@ export const Ver: React.FC<VerProps> = ({ onSubmit }) => {
               <th>Título</th>
               <th>Estado</th>
               <th>Préstamo</th>
+			  <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -115,10 +178,36 @@ export const Ver: React.FC<VerProps> = ({ onSubmit }) => {
             ) : (
               libros.map((libro) => (
                 <tr key={libro.id_libro}>
-                  <td>{libro.titulo}</td>
-                  <td>{libro.estado}</td>
-                  <td>
-                    {libro.prestamo_activo ? (
+                <td>
+    {editingId === libro.id_libro ? (
+      <input
+        type="text"
+        name="titulo"
+        value={editFormData.titulo}
+        onChange={handleEditFormChange}
+        style={{ width: '100%', padding: '4px' }}
+      />
+    ) : (
+      libro.titulo
+    )}
+  </td>  
+<td>
+    {editingId === libro.id_libro ? (
+      <select
+        name="estado"
+        value={editFormData.estado}
+        onChange={handleEditFormChange}
+        style={{ padding: '4px' }}
+      >
+        <option value="Disponible">Disponible</option>
+        <option value="Prestado">Prestado</option>
+        <option value="Reservado">Reservado</option>
+      </select>
+    ) : (
+      libro.estado
+    )}
+  </td>			
+  <td>{libro.prestamo_activo ? (
                       <div>
                         Usuario: {libro.prestamo_activo.id_usuario}
                         <br />
@@ -128,13 +217,38 @@ export const Ver: React.FC<VerProps> = ({ onSubmit }) => {
                       <span>Sin préstamo activo</span>
                     )}
                   </td>
+               {/* Celda de Acciones */}
+                  <td>
+                    {editingId === libro.id_libro ? (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                          onClick={() => handleSaveEdit(libro.id_libro)}
+                          style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer' }}
+                        >
+                          Guardar
+                        </button>
+                        <button 
+                          onClick={handleCancelEdit}
+                          style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer' }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={() => handleEditClick(libro)}
+                        style={{ backgroundColor: '#2196F3', color: 'white', border: 'none', padding: '5px 15px', borderRadius: '3px', cursor: 'pointer' }}
+                      >
+                        Editar
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </section>
-
       <section style={{ marginTop: '32px' }}>
         <button
           type="button"
